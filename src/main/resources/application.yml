@@ -1,0 +1,109 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: vitalys-api
+
+  # ── PostgreSQL DataSource ──────────────────────────────────────────────────
+  datasource:
+    url: jdbc:postgresql://localhost:5432/vitalys_db
+    username: vitalys
+    password: vitalys_secret
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # ── JPA / Hibernate ───────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Flyway owns schema; Hibernate only validates
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+
+  # ── Flyway ────────────────────────────────────────────────────────────────
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    validate-on-migrate: true
+
+  # ── OAuth2 / SSO ──────────────────────────────────────────────────────────
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:placeholder}
+            client-secret: ${GOOGLE_CLIENT_SECRET:placeholder}
+            scope: openid,profile,email
+          azure:
+            client-id: ${AZURE_CLIENT_ID:placeholder}
+            client-secret: ${AZURE_CLIENT_SECRET:placeholder}
+            scope: openid,profile,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            client-name: Microsoft Azure
+        provider:
+          azure:
+            authorization-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID:common}/oauth2/v2.0/authorize
+            token-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID:common}/oauth2/v2.0/token
+            user-info-uri: https://graph.microsoft.com/oidc/userinfo
+            jwk-set-uri: https://login.microsoftonline.com/${AZURE_TENANT_ID:common}/discovery/v2.0/keys
+            user-name-attribute: sub
+
+# ── JWT Configuration ──────────────────────────────────────────────────────
+jwt:
+  secret: ${JWT_SECRET:vitalys-super-secret-key-change-this-in-production-min-256-bits}
+  access-token-expiry-ms: 900000         # 15 minutes
+  refresh-token-expiry-ms: 604800000     # 7 days
+  issuer: vitalys
+
+# ── CORS Configuration ─────────────────────────────────────────────────────
+cors:
+  allowed-origins:
+    - http://localhost:4200
+    - http://127.0.0.1:4200
+  allowed-methods: GET,POST,PUT,DELETE,PATCH,OPTIONS
+  allowed-headers: "*"
+  max-age: 3600
+
+# ── Password Policy ────────────────────────────────────────────────────────
+security:
+  password:
+    max-failed-attempts: 5
+    expiry-days: 90
+    min-length: 8
+
+# ── Logging ────────────────────────────────────────────────────────────────
+logging:
+  level:
+    com.vitalys: DEBUG
+    org.springframework.security: INFO
+    org.flywaydb: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# ── SpringDoc / OpenAPI / Swagger UI ───────────────────────────────────────
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: alpha
+    tagsSorter: alpha
+    displayRequestDuration: true
+  show-actuator: false

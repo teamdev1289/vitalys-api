@@ -36,5 +36,18 @@ public class SpecificationSet extends BaseEntity {
     @Column(name = "change_reason")
     private String changeReason;
 
+    @Column(name = "spec_code", unique = true)
+    private String specCode;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "product_id")
+    private Long productId;
+
+    @Column(name = "market")
+    private String market;
+
+    @Column(name = "expiry_date")
+    private OffsetDateTime expiryDate;
 }

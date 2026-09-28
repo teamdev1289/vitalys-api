@@ -23,9 +23,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     List<Project> findByCustomerId(Long customerId);
 
     @Query("SELECT p FROM Project p WHERE " +
-           "(:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(p.code) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(p.code) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(p.description) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:customerId IS NULL OR p.customerId = :customerId) " +
            "AND (:status IS NULL OR p.status = :status)")
     Page<Project> searchProjects(@Param("search") String search,

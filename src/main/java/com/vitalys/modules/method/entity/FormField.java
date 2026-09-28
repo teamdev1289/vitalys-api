@@ -42,5 +42,18 @@ public class FormField extends BaseEntity {
     @Column(name = "order_index")
     private String orderIndex;
 
+    @Column(name = "options_json", columnDefinition = "TEXT")
+    private String optionsJson;
 
+    @Column(name = "default_value")
+    private String defaultValue;
+
+    @Column(name = "unit")
+    private String unit;
+
+    @Column(name = "formula_expression")
+    private String formulaExpression;
+
+    @Column(name = "validation_rules", columnDefinition = "TEXT")
+    private String validationRules;
 }

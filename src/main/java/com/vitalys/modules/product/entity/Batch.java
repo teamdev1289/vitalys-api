@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.OffsetDateTime;
 
 /**
- * Production batch
+ * Production & QC testing batch.
  */
 @Entity
 @Table(name = "product_batch")
@@ -21,13 +21,16 @@ public class Batch extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "product_id")
+    private Long productId;
+
     @Column(name = "formulation_id")
     private Long formulationId;
 
     @Column(name = "spec_set_id")
     private Long specSetId;
 
-    @Column(name = "batch_number")
+    @Column(name = "batch_number", nullable = false)
     private String batchNumber;
 
     @Column(name = "manufacturing_date")
@@ -39,8 +42,14 @@ public class Batch extends BaseEntity {
     @Column(name = "quantity_produced")
     private Double quantityProduced;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "unit")
+    @Builder.Default
+    private String unit = "TABLETS";
 
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private String status = "QUARANTINE";
 
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

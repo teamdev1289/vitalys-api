@@ -42,5 +42,12 @@ public class MethodValidationProtocol extends BaseEntity {
     @Column(name = "approved_date")
     private OffsetDateTime approvedDate;
 
+    @Column(name = "title")
+    private String title;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "conclusion", columnDefinition = "TEXT")
+    private String conclusion;
 }

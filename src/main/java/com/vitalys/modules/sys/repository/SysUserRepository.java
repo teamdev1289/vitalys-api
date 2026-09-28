@@ -22,9 +22,9 @@ public interface SysUserRepository extends JpaRepository<SysUser, Long> {
     boolean existsByEmail(String email);
 
     @Query("SELECT u FROM SysUser u WHERE " +
-           "(:search IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(u.email)    LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(:search IS NULL OR LOWER(u.username) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(u.email)    LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:status IS NULL OR u.status = :status) " +
            "AND (:departmentId IS NULL OR u.department.id = :departmentId)")
     Page<SysUser> searchUsers(@Param("search") String search,

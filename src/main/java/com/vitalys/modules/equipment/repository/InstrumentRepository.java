@@ -23,11 +23,11 @@ public interface InstrumentRepository extends JpaRepository<Instrument, Long> {
     List<Instrument> findByDepartmentId(Long departmentId);
 
     @Query("SELECT i FROM Instrument i WHERE " +
-           "(:search IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(i.assetCode) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(i.model) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', :search, '%')) " +
-           "   OR LOWER(i.serialNumber) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "(:search IS NULL OR LOWER(i.name) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(i.assetCode) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(i.model) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(i.manufacturer) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%')) " +
+           "   OR LOWER(i.serialNumber) LIKE LOWER(CONCAT('%', CAST(:search AS string), '%'))) " +
            "AND (:status IS NULL OR i.status = :status) " +
            "AND (:departmentId IS NULL OR i.departmentId = :departmentId)")
     Page<Instrument> searchInstruments(@Param("search") String search,

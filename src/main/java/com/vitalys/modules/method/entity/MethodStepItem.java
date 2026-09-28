@@ -45,5 +45,9 @@ public class MethodStepItem extends BaseEntity {
     @Column(name = "order_index")
     private String orderIndex;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
+    @Column(name = "instruction_notes", columnDefinition = "TEXT")
+    private String instructionNotes;
 }

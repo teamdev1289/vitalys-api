@@ -3,10 +3,9 @@ package com.vitalys.modules.product.entity;
 import com.vitalys.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.OffsetDateTime;
 
 /**
- * Product definition
+ * Pharmaceutical Product definition.
  */
 @Entity
 @Table(name = "product_product")
@@ -21,10 +20,13 @@ public class Product extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "product_code", unique = true)
+    private String productCode;
+
     @Column(name = "registration_number")
     private String registrationNumber;
 
-    @Column(name = "product_name")
+    @Column(name = "product_name", nullable = false)
     private String productName;
 
     @Column(name = "dosage_form")
@@ -54,8 +56,10 @@ public class Product extends BaseEntity {
     @Column(name = "classification")
     private String classification;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "status", nullable = false)
+    @Builder.Default
+    private String status = "ACTIVE";
 
-
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 }

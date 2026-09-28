@@ -39,5 +39,12 @@ public class SpecificationItem extends BaseEntity {
     @Column(name = "unit")
     private String unit;
 
+    @Column(name = "parameter_name")
+    private String parameterName;
 
+    @Column(name = "comparison_operator")
+    private String comparisonOperator;
+
+    @Column(name = "text_acceptance_criteria", columnDefinition = "TEXT")
+    private String textAcceptanceCriteria;
 }

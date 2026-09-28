@@ -33,5 +33,9 @@ public class FormTemplate extends BaseEntity {
     @Column(name = "schema_name")
     private String schemaName;
 
+    @Column(name = "title")
+    private String title;
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 }

@@ -3,10 +3,12 @@ package com.vitalys.modules.sample.entity;
 import com.vitalys.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.OffsetDateTime;
 
 /**
- * Request for testing
+ * Testing Request entity representing formal lab analysis orders
+ * from manufacturing batches, R&D formulation trials, or external clients.
  */
 @Entity
 @Table(name = "sample_test_request")
@@ -21,11 +23,17 @@ public class TestRequest extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "source_type")
-    private String sourceType;
+    @Column(name = "request_code", unique = true, length = 100)
+    private String requestCode;
 
-    @Column(name = "sample_type")
-    private String sampleType;
+    @Column(name = "source_type", length = 50)
+    private String sourceType; // BATCH, CUSTOMER, FORMULATION_TRIAL, STABILITY, OTHER
+
+    @Column(name = "sample_type", length = 50)
+    private String sampleType; // FINISHED_PRODUCT, RAW_MATERIAL, IN_PROCESS, STABILITY, ENVIRONMENTAL
+
+    @Column(name = "product_id")
+    private Long productId;
 
     @Column(name = "batch_id")
     private Long batchId;
@@ -42,7 +50,10 @@ public class TestRequest extends BaseEntity {
     @Column(name = "project_id")
     private Long projectId;
 
-    @Column(name = "requested_by")
+    @Column(name = "spec_set_id")
+    private Long specSetId;
+
+    @Column(name = "requested_by", length = 100)
     private String requestedBy;
 
     @Column(name = "request_date")
@@ -51,14 +62,15 @@ public class TestRequest extends BaseEntity {
     @Column(name = "due_date")
     private OffsetDateTime dueDate;
 
-    @Column(name = "priority")
-    private String priority;
+    @Column(name = "priority", length = 20)
+    private String priority; // NORMAL, URGENT, EMERGENCY
 
-    @Column(name = "test_scope")
-    private String testScope;
+    @Column(name = "test_scope", length = 100)
+    private String testScope; // RELEASE_TESTING, STABILITY_PULL_TESTING, FULL_COMPENDIAL, IDENTITY_ONLY, INVESTIGATION
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "status", length = 50)
+    private String status; // SUBMITTED, RECEIVED, IN_TESTING, COMPLETED, CANCELLED
 
-
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

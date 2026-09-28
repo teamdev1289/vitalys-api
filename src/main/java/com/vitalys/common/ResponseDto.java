@@ -50,6 +50,15 @@ public class ResponseDto<T> {
                 .build();
     }
 
+    public static <T> ResponseDto<T> created(String message, T data) {
+        return ResponseDto.<T>builder()
+                .success(true)
+                .message(message)
+                .data(data)
+                .timestamp(OffsetDateTime.now())
+                .build();
+    }
+
     public static ResponseDto<Void> noContent(String message) {
         return ResponseDto.<Void>builder()
                 .success(true)

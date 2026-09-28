@@ -15,6 +15,7 @@ import java.util.Map;
  */
 @Entity
 @Table(name = "sys_audit_trail")
+@org.hibernate.annotations.Immutable
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

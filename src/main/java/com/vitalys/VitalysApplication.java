@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * Laboratory Information Management System backend API.
  */
 @SpringBootApplication
-@EnableJpaAuditing(auditorAwareRef = "auditorProvider")
+@EnableJpaAuditing(auditorAwareRef = "auditorProvider", dateTimeProviderRef = "dateTimeProvider")
 @EnableAsync
 public class VitalysApplication {
 

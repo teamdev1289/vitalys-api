@@ -31,4 +31,9 @@ public class JpaAuditingConfig {
             return Optional.of(auth.getName());
         };
     }
+
+    @Bean
+    public org.springframework.data.auditing.DateTimeProvider dateTimeProvider() {
+        return () -> Optional.of(java.time.OffsetDateTime.now());
+    }
 }

@@ -6,7 +6,7 @@ import lombok.*;
 import java.time.OffsetDateTime;
 
 /**
- * Record of preparation
+ * Record of chemical/reagent solution preparation
  */
 @Entity
 @Table(name = "inventory_preparation_record")
@@ -21,11 +21,17 @@ public class PreparationRecord extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "solution_name", nullable = false)
+    private String solutionName;
+
     @Column(name = "result_lot_id")
     private Long resultLotId;
 
     @Column(name = "method_id")
     private Long methodId;
+
+    @Column(name = "sop_reference")
+    private String sopReference;
 
     @Column(name = "prepared_by")
     private String preparedBy;
@@ -36,8 +42,16 @@ public class PreparationRecord extends BaseEntity {
     @Column(name = "expiry_at")
     private OffsetDateTime expiryAt;
 
+    @Column(name = "target_volume")
+    private Double targetVolume;
+
+    @Column(name = "unit")
+    private String unit;
+
     @Column(name = "status")
-    private String status;
+    @Builder.Default
+    private String status = "APPROVED"; // DRAFT, APPROVED, EXPIRED
 
-
+    @Column(name = "notes", columnDefinition = "TEXT")
+    private String notes;
 }

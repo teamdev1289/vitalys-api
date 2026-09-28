@@ -15,6 +15,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,10 +47,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String username    = jwtTokenProvider.extractUsername(token);
                     List<String> perms = jwtTokenProvider.extractPermissions(token);
 
-                    // Build authorities from permissions stored in JWT
-                    List<SimpleGrantedAuthority> authorities = perms.stream()
-                            .map(SimpleGrantedAuthority::new)
-                            .collect(Collectors.toList());
+                    List<SimpleGrantedAuthority> authorities = (perms != null)
+                            ? perms.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList())
+                            : Collections.emptyList();
 
                     var userDetails = userDetailsService.loadUserByUsername(username);
                     var authToken = new UsernamePasswordAuthenticationToken(

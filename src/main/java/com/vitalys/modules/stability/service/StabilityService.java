@@ -138,6 +138,14 @@ public class StabilityService {
                 .map(this::mapToPullEventResponse);
     }
 
+    @Transactional(readOnly = true)
+    public List<StabilityPullEventResponse> getPullEventsByStudyId(Long studyId) {
+        return pullEventRepository.findByStudyIdOrderByScheduledDateAsc(studyId)
+                .stream()
+                .map(this::mapToPullEventResponse)
+                .toList();
+    }
+
     @Transactional
     public StabilityPullEventResponse executePull(Long eventId, StabilityPullActionRequest req, String username) {
         StabilityPullEvent event = pullEventRepository.findById(eventId)
@@ -163,32 +171,33 @@ public class StabilityService {
             StabilityTimePoint tp = timePointRepository.findById(event.getTimePointId()).orElse(null);
 
             if (study != null) {
+                // Create TestRequest
+                String requestCode = "REQ-STB-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+                TestRequest testReq = TestRequest.builder()
+                        .requestCode(requestCode)
+                        .sourceType("STABILITY")
+                        .sampleType("STABILITY")
+                        .productId(study.getProductId())
+                        .batchId(study.getBatchId())
+                        .priority("NORMAL")
+                        .status("SUBMITTED")
+                        .notes(String.format("Yêu cầu kiểm nghiệm độ ổn định study %s - Mốc %s", study.getStudyCode(), tp != null ? tp.getPointLabel() : ""))
+                        .build();
+                testReq = testRequestRepository.save(testReq);
+                event.setTestRequestId(testReq.getId());
+                event.setStatus("IN_TESTING");
+
                 // Create Sample
                 String sampleCode = "SMP-STB-" + LocalDate.now().getYear() + "-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
                 Sample sample = Sample.builder()
+                        .requestId(testReq.getId())
                         .sampleCode(sampleCode)
-                        .productId(study.getProductId())
-                        .batchId(study.getBatchId())
                         .status("RECEIVED")
                         .storageCondition("Tủ mẫu ổn định")
                         .notes(String.format("Mẫu rút độ ổn định study %s - Mốc %s", study.getStudyCode(), tp != null ? tp.getPointLabel() : ""))
                         .build();
                 sample = sampleRepository.save(sample);
                 event.setSampleId(sample.getId());
-
-                // Create TestRequest
-                String requestCode = "REQ-STB-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-                TestRequest testReq = TestRequest.builder()
-                        .requestCode(requestCode)
-                        .requestType("STABILITY")
-                        .productId(study.getProductId())
-                        .batchId(study.getBatchId())
-                        .priority("NORMAL")
-                        .status("SUBMITTED")
-                        .build();
-                testReq = testRequestRepository.save(testReq);
-                event.setTestRequestId(testReq.getId());
-                event.setStatus("IN_TESTING");
             }
         }
 

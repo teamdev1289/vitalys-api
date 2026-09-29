@@ -42,6 +42,12 @@ public class StabilityController {
         return ResponseEntity.ok(ResponseDto.ok(stabilityService.getStudyById(id)));
     }
 
+    @GetMapping("/studies/{id}/pull-events")
+    @PreAuthorize("hasAuthority('STABILITY:PULL:READ') or hasRole('IT_ADMIN')")
+    public ResponseEntity<ResponseDto<java.util.List<StabilityPullEventResponse>>> getPullEventsByStudyId(@PathVariable Long id) {
+        return ResponseEntity.ok(ResponseDto.ok(stabilityService.getPullEventsByStudyId(id)));
+    }
+
     @PostMapping("/studies")
     @PreAuthorize("hasAuthority('STABILITY:STUDY:CREATE') or hasRole('IT_ADMIN')")
     public ResponseEntity<ResponseDto<StabilityStudyResponse>> createStudy(

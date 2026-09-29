@@ -169,4 +169,18 @@ class StabilityServiceTest {
         // At y = 95.0%, month = (95 - 100) / (-1/3) = 15.0 months
         assertEquals(15.0, trend.getShelfLifeEstimatedMonths(), 0.1);
     }
+
+    @Test
+    void testGetPullEventsByStudyId() {
+        List<StabilityPullEvent> events = List.of(
+                StabilityPullEvent.builder().id(101L).studyId(1L).scheduledDate(LocalDate.now()).status("SCHEDULED").build()
+        );
+        when(pullEventRepository.findByStudyIdOrderByScheduledDateAsc(1L)).thenReturn(events);
+
+        List<StabilityPullEventResponse> res = stabilityService.getPullEventsByStudyId(1L);
+
+        assertNotNull(res);
+        assertEquals(1, res.size());
+        assertEquals(101L, res.get(0).getId());
+    }
 }

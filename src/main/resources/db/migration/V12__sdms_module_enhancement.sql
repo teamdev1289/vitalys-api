@@ -104,21 +104,25 @@ INSERT INTO sdms_data_file (
     storage_path, mime_type, status, instrument_id, run_id, sample_id, test_id,
     uploaded_by, notes, created_at, updated_at
 )
-VALUES
+SELECT
+    v.id, v.file_code, v.original_filename, v.file_type, v.file_size, v.checksum_sha256,
+    v.storage_path, v.mime_type, v.status, v.instrument_id, v.run_id,
+    s.id AS sample_id,
+    v.test_id, v.uploaded_by, v.notes, v.created_at, v.updated_at
+FROM (VALUES
 (
     1,
     'SDMS-20260901-HPLC-001',
     'Paracetamol_Assay_Batch260101_Run01.csv',
     'CHROMATOGRAM_HPLC',
-    1048576,
+    1048576::BIGINT,
     '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8',
     '/data/sdms/hplc/2026/09/Paracetamol_Assay_Batch260101_Run01.csv',
     'text/csv',
     'INDEXED',
-    1, -- HPLC Agilent 1260
-    1, -- Analytical Run 1
-    4, -- Sample SMP-20260901-0001
-    1, -- Test 1 (Hàm lượng Paracetamol)
+    1::BIGINT, -- HPLC Agilent 1260
+    1::BIGINT, -- Analytical Run 1
+    1::BIGINT, -- Test 1 (Hàm lượng Paracetamol)
     'operator',
     'Dữ liệu sắc ký đồ HPLC phân tích định lượng Paracetamol theo DĐVN V. Đỉnh pic sắc nét, độ phân giải cao.',
     NOW() - INTERVAL '4 hours',
@@ -129,20 +133,23 @@ VALUES
     'SDMS-20260901-UV-001',
     'Paracetamol_Identification_UV_Spectrum.csv',
     'SPECTRUM_UV_VIS',
-    524288,
+    524288::BIGINT,
     '8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4',
     '/data/sdms/spectroscopy/2026/09/Paracetamol_Identification_UV_Spectrum.csv',
     'text/csv',
     'INDEXED',
-    2, -- UV-Vis Shimadzu
-    1,
-    4,
-    2,
+    2::BIGINT, -- UV-Vis Shimadzu
+    1::BIGINT,
+    2::BIGINT, -- Test 2
     'operator',
     'Phổ hấp thụ tử ngoại UV-Vis quét từ 200 - 400 nm. Đỉnh hấp thụ cực đại tại 257 nm phù hợp chuẩn đối chiếu.',
     NOW() - INTERVAL '3 hours',
     NOW() - INTERVAL '3 hours'
 )
+) AS v(id, file_code, original_filename, file_type, file_size, checksum_sha256,
+       storage_path, mime_type, status, instrument_id, run_id, test_id,
+       uploaded_by, notes, created_at, updated_at)
+JOIN sample_sample s ON s.sample_code = 'SMP-20260901-0001'
 ON CONFLICT (file_code) DO NOTHING;
 
 -- Seed Metadata for File 1 (HPLC)

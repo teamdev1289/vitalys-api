@@ -292,66 +292,75 @@ INSERT INTO stability_pull_event (
     window_start, window_end, pull_date, pulled_by, sample_id, test_request_id,
     status, assay_result, dissolution_result, notes, created_at, updated_at
 )
-VALUES
 -- Condition 1: 25°C / 60%RH (Long-term)
-(
-    1, 1, 1, 1, CURRENT_DATE - INTERVAL '6 months',
+SELECT 1, 1, 1, 1, CURRENT_DATE - INTERVAL '6 months',
     CURRENT_DATE - INTERVAL '6 months', CURRENT_DATE - INTERVAL '6 months',
-    NOW() - INTERVAL '6 months', 'operator', 4, 4,
+    NOW() - INTERVAL '6 months', 'operator', s.id, r.id,
     'COMPLETED', 100.2, 94.5, 'Rút mẫu T0 hoàn tất, kết quả đạt tiêu chuẩn xuất xưởng.',
     NOW() - INTERVAL '6 months', NOW() - INTERVAL '6 months'
-),
-(
-    2, 1, 2, 1, CURRENT_DATE - INTERVAL '3 months',
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
+UNION ALL
+SELECT 2, 1, 2, 1, CURRENT_DATE - INTERVAL '3 months',
     CURRENT_DATE - INTERVAL '3 months' - INTERVAL '7 days', CURRENT_DATE - INTERVAL '3 months' + INTERVAL '7 days',
-    NOW() - INTERVAL '3 months', 'operator', 4, 4,
+    NOW() - INTERVAL '3 months', 'operator', s.id, r.id,
     'COMPLETED', 99.8, 93.8, 'Rút mẫu mốc 3M. Mẫu bảo quản tốt, không biến màu.',
     NOW() - INTERVAL '3 months', NOW() - INTERVAL '3 months'
-),
-(
-    3, 1, 3, 1, CURRENT_DATE,
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
+UNION ALL
+SELECT 3, 1, 3, 1, CURRENT_DATE,
     CURRENT_DATE - INTERVAL '7 days', CURRENT_DATE + INTERVAL '7 days',
-    NOW(), 'operator', 4, 4,
+    NOW(), 'operator', s.id, r.id,
     'PULLED', 99.4, 93.2, 'Đã rút mẫu mốc 6M, gửi bộ phận phân tích kiểm tra hàm lượng.',
     NOW(), NOW()
-),
-(
-    4, 1, 4, 1, CURRENT_DATE + INTERVAL '3 months',
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
+UNION ALL
+SELECT 4, 1, 4, 1, CURRENT_DATE + INTERVAL '3 months',
     CURRENT_DATE + INTERVAL '3 months' - INTERVAL '7 days', CURRENT_DATE + INTERVAL '3 months' + INTERVAL '7 days',
     NULL, NULL, NULL, NULL,
     'SCHEDULED', NULL, NULL, 'Mốc rút mẫu định kỳ 9 tháng.',
     NOW(), NOW()
-),
-(
-    5, 1, 5, 1, CURRENT_DATE + INTERVAL '6 months',
+
+UNION ALL
+SELECT 5, 1, 5, 1, CURRENT_DATE + INTERVAL '6 months',
     CURRENT_DATE + INTERVAL '6 months' - INTERVAL '10 days', CURRENT_DATE + INTERVAL '6 months' + INTERVAL '10 days',
     NULL, NULL, NULL, NULL,
     'SCHEDULED', NULL, NULL, 'Mốc rút mẫu định kỳ 12 tháng (Hạn dùng tạm thời).',
     NOW(), NOW()
-),
 
 -- Condition 2: 40°C / 75%RH (Accelerated)
-(
-    6, 1, 1, 2, CURRENT_DATE - INTERVAL '6 months',
+UNION ALL
+SELECT 6, 1, 1, 2, CURRENT_DATE - INTERVAL '6 months',
     CURRENT_DATE - INTERVAL '6 months', CURRENT_DATE - INTERVAL '6 months',
-    NOW() - INTERVAL '6 months', 'operator', 4, 4,
+    NOW() - INTERVAL '6 months', 'operator', s.id, r.id,
     'COMPLETED', 100.2, 94.5, 'Khởi điểm cấp tốc T0.',
     NOW() - INTERVAL '6 months', NOW() - INTERVAL '6 months'
-),
-(
-    7, 1, 2, 2, CURRENT_DATE - INTERVAL '3 months',
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
+UNION ALL
+SELECT 7, 1, 2, 2, CURRENT_DATE - INTERVAL '3 months',
     CURRENT_DATE - INTERVAL '3 months' - INTERVAL '7 days', CURRENT_DATE - INTERVAL '3 months' + INTERVAL '7 days',
-    NOW() - INTERVAL '3 months', 'operator', 4, 4,
+    NOW() - INTERVAL '3 months', 'operator', s.id, r.id,
     'COMPLETED', 98.9, 91.5, 'Cấp tốc 3M: hàm lượng giảm nhẹ 1.3%, vẫn nằm trong giới hạn [95.0% - 105.0%].',
     NOW() - INTERVAL '3 months', NOW() - INTERVAL '3 months'
-),
-(
-    8, 1, 3, 2, CURRENT_DATE,
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
+UNION ALL
+SELECT 8, 1, 3, 2, CURRENT_DATE,
     CURRENT_DATE - INTERVAL '7 days', CURRENT_DATE + INTERVAL '7 days',
-    NOW(), 'operator', 4, 4,
+    NOW(), 'operator', s.id, r.id,
     'PULLED', 98.2, 89.8, 'Cấp tốc 6M (Mốc then chốt ICH): Đang tiến hành chạy sắc ký HPLC.',
     NOW(), NOW()
-)
+FROM sample_sample s, sample_test_request r
+WHERE s.sample_code = 'SMP-20260901-0001' AND r.request_code = 'REQ-20260901-001'
+
 ON CONFLICT (id) DO NOTHING;
 
 -- Reset Sequences

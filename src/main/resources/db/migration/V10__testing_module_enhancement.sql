@@ -111,12 +111,28 @@ INSERT INTO testing_analytical_run (id, run_code, name, instrument_id, run_date,
 VALUES (1, 'RUN-20260901-001', 'HPLC Paracetamol Monograph Assay Sequence', 1, '2026-09-01 10:00:00+00', 'operator', 'COMPLETED', 12, 'Agilent 1260 HPLC Sequence completed with acceptable RSD < 1.0%')
 ON CONFLICT (id) DO NOTHING;
 
--- Insert Active Tests for Sample 4 (Paracetamol sample)
+-- Insert Active Tests for Sample SMP-20260901-0001 (Paracetamol primary sample)
 INSERT INTO testing_test (id, test_code, sample_id, method_id, run_id, form_template_id, spec_item_id, status, assigned_to, priority, due_date, started_at, notes)
-VALUES
-    (1, 'TST-20260901-0001', 4, 1, 1, 1, 1, 'COMPLETED', 'operator', 'NORMAL', CURRENT_TIMESTAMP + INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '4 hours', 'Paracetamol Active Ingredient Content Assay'),
-    (2, 'TST-20260901-0002', 4, 1, NULL, NULL, 2, 'IN_PROGRESS', 'operator', 'NORMAL', CURRENT_TIMESTAMP + INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '1 hour', 'Tablet Dissolution Test 30min in 0.05M Phosphate buffer'),
-    (3, 'TST-20260901-0003', 4, 1, NULL, NULL, 3, 'ASSIGNED', 'analyst_hoa', 'URGENT', CURRENT_TIMESTAMP + INTERVAL '1 day', NULL, '4-Aminophenol Related Impurity Assay')
+SELECT
+    v.id,
+    v.test_code,
+    s.id AS sample_id,
+    v.method_id,
+    v.run_id,
+    v.form_template_id,
+    v.spec_item_id,
+    v.status,
+    v.assigned_to,
+    v.priority,
+    v.due_date,
+    v.started_at,
+    v.notes
+FROM (VALUES
+    (1, 'TST-20260901-0001', 1, 1, 1, 1, 'COMPLETED', 'operator', 'NORMAL', CURRENT_TIMESTAMP + INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '4 hours', 'Paracetamol Active Ingredient Content Assay'),
+    (2, 'TST-20260901-0002', 1, NULL::BIGINT, NULL::BIGINT, 2, 'IN_PROGRESS', 'operator', 'NORMAL', CURRENT_TIMESTAMP + INTERVAL '2 days', CURRENT_TIMESTAMP - INTERVAL '1 hour', 'Tablet Dissolution Test 30min in 0.05M Phosphate buffer'),
+    (3, 'TST-20260901-0003', 1, NULL::BIGINT, NULL::BIGINT, 3, 'ASSIGNED', 'analyst_hoa', 'URGENT', CURRENT_TIMESTAMP + INTERVAL '1 day', NULL::TIMESTAMPTZ, '4-Aminophenol Related Impurity Assay')
+) AS v(id, test_code, method_id, run_id, form_template_id, spec_item_id, status, assigned_to, priority, due_date, started_at, notes)
+JOIN sample_sample s ON s.sample_code = 'SMP-20260901-0001'
 ON CONFLICT (id) DO NOTHING;
 
 -- Insert Result for Test 1 (Passed Assay: 100.4%)

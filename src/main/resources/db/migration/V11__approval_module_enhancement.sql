@@ -68,17 +68,20 @@ WHERE r.code = 'OPERATOR'
   AND p.action IN ('READ', 'EXECUTE')
 ON CONFLICT DO NOTHING;
 
--- ── 4. Seed 3-Stage Approval Steps for Sample 4 (Paracetamol Tablets) ─────────
--- Check if sample 4 exists
+-- ── 4. Seed 3-Stage Approval Steps for Sample SMP-20260901-0001 (Paracetamol Tablets) ─────────
 DO $$
+DECLARE
+    v_sample_id BIGINT;
 BEGIN
-    IF EXISTS (SELECT 1 FROM sample_sample WHERE id = 4) THEN
+    SELECT id INTO v_sample_id FROM sample_sample WHERE sample_code = 'SMP-20260901-0001';
+
+    IF v_sample_id IS NOT NULL THEN
         -- Step 1: Analyst Verification (Author) - COMPLETED
         INSERT INTO approval_approval_step (
             entity_type, entity_id, step_number, step_order, step_name, required_role,
             status, actioned_by, actioned_at, meaning, comment, e_signature_hash, created_at, updated_at
         ) VALUES (
-            'SAMPLE', 4, 1, '1', 'Kiểm nghiệm viên xác nhận kết quả (Analyst Verification)', 'OPERATOR',
+            'SAMPLE', v_sample_id, 1, '1', 'Kiểm nghiệm viên xác nhận kết quả (Analyst Verification)', 'OPERATOR',
             'APPROVED', 'operator', CURRENT_TIMESTAMP - INTERVAL '2 hours',
             'Tôi xác nhận đã hoàn tất thử nghiệm và các kết quả phân tích là trung thực, chính xác (Author)',
             'Hoàn tất phân tích chỉ tiêu Hàm lượng và Độ hòa tan theo đúng SOP-HPLC-001.',
@@ -91,7 +94,7 @@ BEGIN
             entity_type, entity_id, step_number, step_order, step_name, required_role,
             status, actioned_by, actioned_at, meaning, comment, e_signature_hash, created_at, updated_at
         ) VALUES (
-            'SAMPLE', 4, 2, '2', 'Soát xét kỹ thuật phòng kiểm nghiệm (Supervisor Technical Review)', 'SUPERVISOR',
+            'SAMPLE', v_sample_id, 2, '2', 'Soát xét kỹ thuật phòng kiểm nghiệm (Supervisor Technical Review)', 'SUPERVISOR',
             'PENDING', NULL, NULL,
             'Tôi đã soát xét dữ liệu thô, nhật ký thiết bị và xác nhận quy trình tuân thủ GLP (Reviewer)',
             NULL, NULL,
@@ -103,7 +106,7 @@ BEGIN
             entity_type, entity_id, step_number, step_order, step_name, required_role,
             status, actioned_by, actioned_at, meaning, comment, e_signature_hash, created_at, updated_at
         ) VALUES (
-            'SAMPLE', 4, 3, '3', 'Phê duyệt xuất xưởng & Ban hành COA (QA Head Approval)', 'LAB_ADMIN',
+            'SAMPLE', v_sample_id, 3, '3', 'Phê duyệt xuất xưởng & Ban hành COA (QA Head Approval)', 'LAB_ADMIN',
             'PENDING', NULL, NULL,
             'Tôi phê duyệt phát hành Phiếu kiểm nghiệm (COA) và giải phóng lô hàng (Approver)',
             NULL, NULL,
@@ -114,10 +117,11 @@ BEGIN
         INSERT INTO approval_report (
             sample_id, report_code, version, status, conclusion, generated_by, notes, created_at, updated_at
         ) VALUES (
-            4, 'COA-20260901-0001', '1.0', 'DRAFT',
+            v_sample_id, 'COA-20260901-0001', '1.0', 'DRAFT',
             'Mẫu thử đạt yêu cầu theo Tiêu chuẩn cơ sở (Dược điển Việt Nam V)',
             'operator', 'Bản dự thảo Phiếu kiểm nghiệm đang chờ soát xét 3 cấp.',
             CURRENT_TIMESTAMP - INTERVAL '2 hours', CURRENT_TIMESTAMP - INTERVAL '2 hours'
         );
     END IF;
 END $$;
+
